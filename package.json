@@ -1,5 +1,6 @@
 {
-  "name": "functions",
+  "name": "proxy-upload-image",
+  "version": "1.0.0",
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "start": "firebase emulators:start --only functions"

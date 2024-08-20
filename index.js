@@ -20,9 +20,13 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors({ origin: true }));
+app.use(cors());
 
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello world' });
+});
 
 app.post('/', async (req, res) => {
   const { image } = req.body;
