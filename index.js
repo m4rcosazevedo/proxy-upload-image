@@ -25,7 +25,10 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Hello world' });
+  res.json({
+    message: 'Hello world',
+    test: firebaseConfig.messagingSenderId
+  });
 });
 
 app.post('/', async (req, res) => {
