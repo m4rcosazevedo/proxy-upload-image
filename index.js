@@ -30,17 +30,10 @@ app.get('/', (req, res) => {
   });
 });
 
-app.post('/test', (req, res) => {
-  const { id } = req.body;
-
-  res.json({
-    message: 'POST',
-    test: id
-  });
-});
-
 app.post('/', async (req, res) => {
   const { image } = req.body;
+
+  console.log('image url', image)
 
   try {
     const response = await fetch(image, {
@@ -48,9 +41,12 @@ app.post('/', async (req, res) => {
     });
     const blob = await response.blob()
     const file = new File([blob], `${new Date().getTime()}.jpg`, { type: 'image/jpeg' })
+
+    console.log('file', file)
     const storageRef = firebaseStorage.ref(storage, `images/${file.name}`)
     await firebaseStorage.uploadBytes(storageRef, file)
     const imageUrl = await firebaseStorage.getDownloadURL(storageRef)
+    console.log('imageUrl', imageUrl)
 
     res.json({ imageUrl })
 
