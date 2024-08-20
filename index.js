@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const firebase = require('firebase/app')
 const firebaseStorage = require('firebase/storage')
+const firebaseFirestore = require('firebase/firestore')
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -14,7 +15,7 @@ const firebaseConfig = {
 
 const appFirebase = firebase.initializeApp(firebaseConfig)
 const storage = firebaseStorage.getStorage(appFirebase)
-const db = firebase.database(appFirebase);
+const db = firebaseFirestore.getFirestore(appFirebase);
 
 const express = require('express');
 const cors = require('cors');
@@ -33,8 +34,10 @@ app.get('/', (req, res) => {
 
 app.get('/firebase', async (req, res) => {
   try {
-    const snapshot = await db.ref('types').once('value');
-    const data = snapshot.val();
+    const types = await firebaseFirestore.collection(db, 'types');
+    const snapshot = await firebaseFirestore.getDocs(types);
+
+    const data = snapshot.docs.map.length > 0 ? snapshot.docs.map(doc => doc.data()) : null;
 
     if (data) {
       res.json({ message: 'Firebase is connected and data was found!', data });
