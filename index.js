@@ -53,7 +53,9 @@ app.post('/', async (req, res) => {
 
   try {
     const response = await fetch(image);
-    const buffer = await response.buffer();
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
 
     const fileName = `${new Date().getTime()}.jpg`;
 
