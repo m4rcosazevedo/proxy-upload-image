@@ -26,8 +26,16 @@ app.use(express.json());
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'Hello world',
-    test: firebaseConfig.messagingSenderId
+    message: 'Hello world'
+  });
+});
+
+app.post('/test', (req, res) => {
+  const { id } = req.body;
+
+  res.json({
+    message: 'POST',
+    test: id
   });
 });
 
