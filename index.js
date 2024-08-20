@@ -14,6 +14,7 @@ const firebaseConfig = {
 
 const appFirebase = firebase.initializeApp(firebaseConfig)
 const storage = firebaseStorage.getStorage(appFirebase)
+const db = firebase.database(appFirebase);
 
 const express = require('express');
 const cors = require('cors');
@@ -30,26 +31,38 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/firebase', async (req, res) => {
+  try {
+    const snapshot = await db.ref('types').once('value');
+    const data = snapshot.val();
+
+    if (data) {
+      res.json({ message: 'Firebase is connected and data was found!', data });
+    } else {
+      res.json({ message: 'Firebase is connected, but no data was found.' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
 app.post('/', async (req, res) => {
   const { image } = req.body;
-
-  console.log('image url', image)
 
   try {
     const response = await fetch(image, {
       method: 'GET',
     });
+
     const blob = await response.blob()
     const file = new File([blob], `${new Date().getTime()}.jpg`, { type: 'image/jpeg' })
 
-    console.log('file', file)
     const storageRef = firebaseStorage.ref(storage, `images/${file.name}`)
     await firebaseStorage.uploadBytes(storageRef, file)
     const imageUrl = await firebaseStorage.getDownloadURL(storageRef)
-    console.log('imageUrl', imageUrl)
 
     res.json({ imageUrl })
-
   } catch (error) {
     console.log(error);
   }
