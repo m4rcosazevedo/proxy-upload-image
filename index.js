@@ -22,7 +22,11 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // Ou use '*' para permitir todas as origens
+  methods: ['GET', 'POST'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'], // Cabeçalhos permitidos
+}));
 
 app.use(express.json());
 
@@ -34,16 +38,10 @@ app.get('/', (req, res) => {
 
 app.get('/firebase', async (req, res) => {
   try {
-    const types = await firebaseFirestore.collection(db, 'types');
-    const snapshot = await firebaseFirestore.getDocs(types);
+    const types = firebaseFirestore.collection(db, 'types');
+    await firebaseFirestore.getDocs(types);
 
-    const data = snapshot.docs.map.length > 0 ? snapshot.docs.map(doc => doc.data()) : null;
-
-    if (data) {
-      res.json({ message: 'Firebase is connected and data was found!', data });
-    } else {
-      res.json({ message: 'Firebase is connected, but no data was found.' });
-    }
+    res.json({ message: 'Firebase is connected' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
